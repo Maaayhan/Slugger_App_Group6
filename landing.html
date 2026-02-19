@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Slugger — Team Wellness, Gamified</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0a0a0f;
+      --surface: #111118;
+      --card: #16161f;
+      --border: rgba(255,255,255,0.07);
+      --accent: #7c3aed;
+      --accent2: #06b6d4;
+      --accent3: #f59e0b;
+      --green: #10b981;
+      --red: #ef4444;
+      --text: #f0f0f8;
+      --muted: #6b6b80;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* ───── NAV ───── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 18px 60px;
+      background: rgba(10,10,15,0.8);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+    }
+    .logo {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.6rem; font-weight: 700; letter-spacing: -0.5px;
+      background: linear-gradient(135deg, #a78bfa, #38bdf8);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .nav-pill {
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: #fff; padding: 9px 22px; border-radius: 100px;
+      font-size: 0.85rem; font-weight: 600; cursor: pointer;
+      border: none; text-decoration: none;
+    }
+
+    /* ───── HERO ───── */
+    .hero {
+      min-height: 100vh;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      text-align: center; padding: 120px 40px 80px;
+      position: relative; overflow: hidden;
+    }
+
+    .hero-bg {
+      position: absolute; inset: 0; z-index: 0;
+      background:
+        radial-gradient(ellipse 80% 60% at 50% -10%, rgba(124,58,237,0.35) 0%, transparent 70%),
+        radial-gradient(ellipse 60% 50% at 80% 80%, rgba(6,182,212,0.2) 0%, transparent 60%),
+        radial-gradient(ellipse 40% 40% at 20% 70%, rgba(245,158,11,0.12) 0%, transparent 60%);
+    }
+
+    /* animated orb */
+    .orb {
+      position: absolute; border-radius: 50%;
+      filter: blur(80px); opacity: 0.35; animation: float 8s ease-in-out infinite;
+    }
+    .orb1 { width: 500px; height: 500px; background: var(--accent); top: -100px; left: -100px; animation-delay: 0s; }
+    .orb2 { width: 400px; height: 400px; background: var(--accent2); bottom: -100px; right: -100px; animation-delay: -3s; }
+    .orb3 { width: 300px; height: 300px; background: var(--accent3); top: 50%; left: 50%; transform: translate(-50%,-50%); animation-delay: -6s; }
+
+    @keyframes float {
+      0%,100% { transform: translateY(0) scale(1); }
+      50% { transform: translateY(-30px) scale(1.05); }
+    }
+
+    .hero-content { position: relative; z-index: 1; max-width: 800px; }
+
+    .badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: rgba(124,58,237,0.15); border: 1px solid rgba(124,58,237,0.4);
+      color: #a78bfa; padding: 6px 16px; border-radius: 100px;
+      font-size: 0.8rem; font-weight: 600; letter-spacing: 0.5px;
+      margin-bottom: 28px;
+    }
+    .badge-dot { width: 7px; height: 7px; background: #a78bfa; border-radius: 50%; animation: pulse 2s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+    h1 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: clamp(3rem, 7vw, 5.5rem);
+      font-weight: 700; line-height: 1.05;
+      letter-spacing: -2px; margin-bottom: 24px;
+    }
+    .grad-text {
+      background: linear-gradient(135deg, #a78bfa 0%, #38bdf8 50%, #fbbf24 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .hero-sub {
+      font-size: 1.2rem; color: var(--muted); max-width: 560px;
+      margin: 0 auto 40px; font-weight: 400; line-height: 1.7;
+    }
+
+    .hero-cta {
+      display: flex; gap: 16px; justify-content: center; flex-wrap: wrap;
+      margin-bottom: 64px;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent), #4f46e5);
+      color: #fff; padding: 14px 32px; border-radius: 12px;
+      font-size: 1rem; font-weight: 600; border: none; cursor: pointer;
+      box-shadow: 0 0 40px rgba(124,58,237,0.4);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 0 60px rgba(124,58,237,0.6); }
+    .btn-secondary {
+      background: transparent; color: var(--text);
+      padding: 14px 32px; border-radius: 12px;
+      font-size: 1rem; font-weight: 600;
+      border: 1px solid var(--border); cursor: pointer;
+      transition: border-color 0.2s, background 0.2s;
+    }
+    .btn-secondary:hover { border-color: rgba(255,255,255,0.3); background: rgba(255,255,255,0.05); }
+
+    /* phone mockup */
+    .phone-mockup {
+      position: relative; display: inline-block;
+    }
+    .phone-frame {
+      width: 280px; height: 580px;
+      background: linear-gradient(145deg, #1a1a2e, #16213e);
+      border-radius: 40px; border: 2px solid rgba(255,255,255,0.12);
+      box-shadow: 0 40px 120px rgba(0,0,0,0.8), 0 0 80px rgba(124,58,237,0.2), inset 0 1px 0 rgba(255,255,255,0.1);
+      overflow: hidden; position: relative;
+    }
+    .phone-notch {
+      width: 80px; height: 24px; background: #0a0a0f;
+      border-radius: 0 0 16px 16px; margin: 0 auto; position: relative; z-index: 2;
+    }
+    .phone-screen {
+      padding: 16px; height: calc(100% - 24px); display: flex; flex-direction: column; gap: 12px;
+    }
+    .pscreen-header {
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .pscreen-title { font-size: 1rem; font-weight: 700; }
+    .pscreen-streak { font-size: 0.7rem; color: var(--accent3); font-weight: 600; }
+
+    .pscreen-progress {
+      background: rgba(255,255,255,0.05); border-radius: 12px; padding: 14px;
+      border: 1px solid var(--border);
+    }
+    .prog-label { font-size: 0.65rem; color: var(--muted); margin-bottom: 6px; }
+    .prog-bar-bg { height: 8px; background: rgba(255,255,255,0.08); border-radius: 100px; overflow: hidden; }
+    .prog-bar-fill {
+      height: 100%; border-radius: 100px;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      animation: grow 2s ease-out forwards;
+    }
+    @keyframes grow { from{width:0} }
+    .prog-stats { display: flex; justify-content: space-between; margin-top: 8px; }
+    .prog-stat { font-size: 0.65rem; }
+    .prog-stat span { font-weight: 700; color: var(--accent2); }
+
+    .activity-list { display: flex; flex-direction: column; gap: 8px; }
+    .activity-item {
+      display: flex; align-items: center; gap: 10px;
+      background: rgba(255,255,255,0.04); border-radius: 10px; padding: 10px 12px;
+      border: 1px solid var(--border);
+    }
+    .act-icon { font-size: 1.2rem; }
+    .act-info { flex: 1; }
+    .act-name { font-size: 0.7rem; font-weight: 600; }
+    .act-user { font-size: 0.6rem; color: var(--muted); }
+    .act-pts { font-size: 0.7rem; font-weight: 700; color: var(--green); }
+
+    .pscreen-leaderboard {
+      background: rgba(255,255,255,0.04); border-radius: 12px; padding: 12px;
+      border: 1px solid var(--border);
+    }
+    .lb-title { font-size: 0.65rem; color: var(--muted); margin-bottom: 8px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+    .lb-item { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+    .lb-rank { font-size: 0.65rem; font-weight: 700; color: var(--muted); width: 14px; }
+    .lb-avatar { width: 22px; height: 22px; border-radius: 50%; font-size: 0.6rem; display: flex; align-items: center; justify-content: center; font-weight: 700; }
+    .lb-name { font-size: 0.65rem; flex: 1; }
+    .lb-pts { font-size: 0.65rem; font-weight: 700; }
+
+    .phone-glow {
+      position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);
+      width: 400px; height: 400px;
+      background: radial-gradient(circle, rgba(124,58,237,0.3), transparent 70%);
+      border-radius: 50%; pointer-events: none; z-index: -1;
+    }
+
+    /* ───── PROBLEM SECTION ───── */
+    section { padding: 100px 40px; }
+
+    .section-label {
+      font-size: 0.8rem; font-weight: 600; letter-spacing: 1px;
+      text-transform: uppercase; color: var(--accent2); margin-bottom: 16px;
+    }
+    .section-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+      font-weight: 700; letter-spacing: -1px; margin-bottom: 20px;
+    }
+    .section-sub { color: var(--muted); font-size: 1.05rem; max-width: 560px; line-height: 1.8; }
+
+    .container { max-width: 1160px; margin: 0 auto; }
+
+    .problem-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 60px;
+      align-items: center;
+    }
+
+    .problem-cards { display: flex; flex-direction: column; gap: 16px; }
+    .problem-card {
+      display: flex; gap: 16px; align-items: flex-start;
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 16px; padding: 20px;
+      transition: border-color 0.3s;
+    }
+    .problem-card:hover { border-color: rgba(239,68,68,0.3); }
+    .problem-icon {
+      width: 40px; height: 40px; border-radius: 10px;
+      background: rgba(239,68,68,0.1); display: flex; align-items: center; justify-content: center;
+      font-size: 1.2rem; flex-shrink: 0;
+    }
+    .problem-card h4 { font-size: 0.95rem; font-weight: 600; margin-bottom: 4px; }
+    .problem-card p { font-size: 0.85rem; color: var(--muted); }
+
+    /* ───── FEATURES ───── */
+    .features-section { background: var(--surface); }
+    .features-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;
+      margin-top: 60px;
+    }
+    .feature-card {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 20px; padding: 32px;
+      transition: transform 0.3s, border-color 0.3s, box-shadow 0.3s;
+      position: relative; overflow: hidden;
+    }
+    .feature-card::before {
+      content: ''; position: absolute; inset: 0; opacity: 0;
+      border-radius: 20px; transition: opacity 0.3s;
+    }
+    .feature-card:hover { transform: translateY(-6px); }
+    .feature-card:hover::before { opacity: 1; }
+
+    .f1::before { background: radial-gradient(circle at 0% 0%, rgba(124,58,237,0.1), transparent 60%); }
+    .f2::before { background: radial-gradient(circle at 0% 0%, rgba(6,182,212,0.1), transparent 60%); }
+    .f3::before { background: radial-gradient(circle at 0% 0%, rgba(245,158,11,0.1), transparent 60%); }
+    .f4::before { background: radial-gradient(circle at 0% 0%, rgba(16,185,129,0.1), transparent 60%); }
+    .f5::before { background: radial-gradient(circle at 0% 0%, rgba(239,68,68,0.1), transparent 60%); }
+    .f6::before { background: radial-gradient(circle at 0% 0%, rgba(168,85,247,0.1), transparent 60%); }
+
+    .f1:hover { border-color: rgba(124,58,237,0.4); box-shadow: 0 20px 60px rgba(124,58,237,0.15); }
+    .f2:hover { border-color: rgba(6,182,212,0.4); box-shadow: 0 20px 60px rgba(6,182,212,0.15); }
+    .f3:hover { border-color: rgba(245,158,11,0.4); box-shadow: 0 20px 60px rgba(245,158,11,0.15); }
+    .f4:hover { border-color: rgba(16,185,129,0.4); box-shadow: 0 20px 60px rgba(16,185,129,0.15); }
+    .f5:hover { border-color: rgba(239,68,68,0.4); box-shadow: 0 20px 60px rgba(239,68,68,0.15); }
+    .f6:hover { border-color: rgba(168,85,247,0.4); box-shadow: 0 20px 60px rgba(168,85,247,0.15); }
+
+    .feature-icon {
+      width: 52px; height: 52px; border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.5rem; margin-bottom: 20px;
+    }
+    .fi-purple { background: rgba(124,58,237,0.15); }
+    .fi-cyan   { background: rgba(6,182,212,0.15); }
+    .fi-amber  { background: rgba(245,158,11,0.15); }
+    .fi-green  { background: rgba(16,185,129,0.15); }
+    .fi-red    { background: rgba(239,68,68,0.15); }
+    .fi-violet { background: rgba(168,85,247,0.15); }
+
+    .feature-card h3 { font-size: 1.1rem; font-weight: 700; margin-bottom: 10px; }
+    .feature-card p  { font-size: 0.88rem; color: var(--muted); line-height: 1.7; }
+
+    /* ───── HOW IT WORKS ───── */
+    .steps-grid {
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: 0;
+      margin-top: 60px; position: relative;
+    }
+    .steps-grid::before {
+      content: '';
+      position: absolute; top: 32px; left: 10%; right: 10%; height: 1px;
+      background: linear-gradient(90deg, transparent, var(--accent), var(--accent2), transparent);
+    }
+    .step { text-align: center; padding: 0 20px; position: relative; }
+    .step-num {
+      width: 64px; height: 64px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.4rem; font-weight: 700;
+      margin: 0 auto 20px;
+      box-shadow: 0 0 30px rgba(124,58,237,0.5);
+      position: relative; z-index: 1;
+    }
+    .step h4 { font-size: 1rem; font-weight: 700; margin-bottom: 8px; }
+    .step p  { font-size: 0.85rem; color: var(--muted); }
+
+    /* ───── TECH STACK ───── */
+    .tech-section { background: var(--surface); }
+    .tech-grid {
+      display: flex; flex-wrap: wrap; gap: 16px;
+      justify-content: center; margin-top: 48px;
+    }
+    .tech-chip {
+      display: flex; align-items: center; gap: 10px;
+      background: var(--card); border: 1px solid var(--border);
+      padding: 12px 20px; border-radius: 100px;
+      font-size: 0.9rem; font-weight: 500;
+      transition: border-color 0.2s, transform 0.2s;
+    }
+    .tech-chip:hover { border-color: rgba(255,255,255,0.2); transform: translateY(-2px); }
+    .tech-chip span { font-size: 1.2rem; }
+
+    /* ───── STATS ───── */
+    .stats-bar {
+      background: linear-gradient(135deg, rgba(124,58,237,0.15), rgba(6,182,212,0.1));
+      border: 1px solid rgba(124,58,237,0.2);
+      border-radius: 24px; padding: 48px;
+      display: grid; grid-template-columns: repeat(4, 1fr);
+      text-align: center; gap: 40px;
+      margin-top: 60px;
+    }
+    .stat-num {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 2.8rem; font-weight: 700;
+      background: linear-gradient(135deg, #a78bfa, #38bdf8);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      margin-bottom: 6px;
+    }
+    .stat-label { font-size: 0.85rem; color: var(--muted); }
+
+    /* ───── CTA ───── */
+    .cta-section {
+      text-align: center;
+      background: radial-gradient(ellipse 80% 60% at 50% 50%, rgba(124,58,237,0.2), transparent 70%);
+    }
+    .cta-section h2 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: clamp(2rem, 4vw, 3.5rem);
+      font-weight: 700; letter-spacing: -1.5px; margin-bottom: 20px;
+    }
+    .cta-section p { color: var(--muted); font-size: 1.1rem; margin-bottom: 40px; }
+    .cta-btn-group { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+
+    /* ───── FOOTER ───── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 40px 60px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    footer .logo { font-size: 1.2rem; }
+    footer p { font-size: 0.8rem; color: var(--muted); }
+
+    /* ───── RESPONSIVE ───── */
+    @media (max-width: 900px) {
+      nav { padding: 16px 24px; }
+      .problem-grid { grid-template-columns: 1fr; }
+      .features-grid { grid-template-columns: 1fr 1fr; }
+      .steps-grid { grid-template-columns: 1fr 1fr; }
+      .steps-grid::before { display: none; }
+      .stats-bar { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 600px) {
+      .features-grid { grid-template-columns: 1fr; }
+      .steps-grid { grid-template-columns: 1fr; }
+      .stats-bar { grid-template-columns: 1fr 1fr; gap: 24px; padding: 32px 24px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="logo">⚾ Slugger</div>
+  <a href="https://github.com/lingering126/Slugger_App_Group6" class="nav-pill">View on GitHub</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg">
+    <div class="orb orb1"></div>
+    <div class="orb orb2"></div>
+    <div class="orb orb3"></div>
+  </div>
+
+  <div class="hero-content">
+    <div class="badge"><span class="badge-dot"></span> React Native · Node.js · MongoDB</div>
+    <h1>Hit Your Goals.<br /><span class="grad-text">Together.</span></h1>
+    <p class="hero-sub">
+      A gamified wellness app that turns group accountability into a competitive, rewarding experience — replacing messy group chats with structured progress tracking.
+    </p>
+    <div class="hero-cta">
+      <button class="btn-primary">⚡ Explore the App</button>
+      <button class="btn-secondary">Read the Docs →</button>
+    </div>
+
+    <!-- Phone Mockup -->
+    <div class="phone-mockup">
+      <div class="phone-glow"></div>
+      <div class="phone-frame">
+        <div class="phone-notch"></div>
+        <div class="phone-screen">
+          <div class="pscreen-header">
+            <span class="pscreen-title">🏆 Team Alpha</span>
+            <span class="pscreen-streak">🔥 7-day streak</span>
+          </div>
+
+          <div class="pscreen-progress">
+            <div class="prog-label">WEEKLY GOAL PROGRESS</div>
+            <div class="prog-bar-bg">
+              <div class="prog-bar-fill" style="width:73%"></div>
+            </div>
+            <div class="prog-stats">
+              <div class="prog-stat"><span>73</span> / 100 pts</div>
+              <div class="prog-stat" style="color:var(--accent3)">3 days left</div>
+            </div>
+          </div>
+
+          <div class="activity-list">
+            <div class="activity-item">
+              <div class="act-icon">🏃</div>
+              <div class="act-info">
+                <div class="act-name">Morning Run — 5km</div>
+                <div class="act-user">@alex • 2h ago</div>
+              </div>
+              <div class="act-pts">+3 pts</div>
+            </div>
+            <div class="activity-item">
+              <div class="act-icon">🧘</div>
+              <div class="act-info">
+                <div class="act-name">Meditation — 20min</div>
+                <div class="act-user">@maya • 4h ago</div>
+              </div>
+              <div class="act-pts">+2 pts</div>
+            </div>
+            <div class="activity-item">
+              <div class="act-icon">✍️</div>
+              <div class="act-info">
+                <div class="act-name">Journaling</div>
+                <div class="act-user">@kai • 6h ago</div>
+              </div>
+              <div class="act-pts">+1 pt</div>
+            </div>
+          </div>
+
+          <div class="pscreen-leaderboard">
+            <div class="lb-title">Leaderboard</div>
+            <div class="lb-item">
+              <div class="lb-rank">🥇</div>
+              <div class="lb-avatar" style="background:rgba(245,158,11,0.2);color:#fbbf24">A</div>
+              <div class="lb-name">Alex</div>
+              <div class="lb-pts" style="color:#fbbf24">28 pts</div>
+            </div>
+            <div class="lb-item">
+              <div class="lb-rank">🥈</div>
+              <div class="lb-avatar" style="background:rgba(6,182,212,0.2);color:#38bdf8">M</div>
+              <div class="lb-name">Maya</div>
+              <div class="lb-pts" style="color:#38bdf8">24 pts</div>
+            </div>
+            <div class="lb-item">
+              <div class="lb-rank">🥉</div>
+              <div class="lb-avatar" style="background:rgba(124,58,237,0.2);color:#a78bfa">K</div>
+              <div class="lb-name">Kai</div>
+              <div class="lb-pts" style="color:#a78bfa">21 pts</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROBLEM -->
+<section>
+  <div class="container">
+    <div class="problem-grid">
+      <div>
+        <div class="section-label">The Problem</div>
+        <h2 class="section-title">Group chats don't cut it for fitness goals</h2>
+        <p class="section-sub">
+          Ian and his friends used a WhatsApp group to track weekly wellness goals. It worked — but it was chaotic. Slugger was built to fix exactly this.
+        </p>
+      </div>
+      <div class="problem-cards">
+        <div class="problem-card">
+          <div class="problem-icon">💬</div>
+          <div>
+            <h4>Messy & Unstructured</h4>
+            <p>Scrolling through hundreds of messages to track who did what is exhausting and error-prone.</p>
+          </div>
+        </div>
+        <div class="problem-card">
+          <div class="problem-icon">📊</div>
+          <div>
+            <h4>No Analytics</h4>
+            <p>No way to see trends, visualize contributions, or understand team performance over time.</p>
+          </div>
+        </div>
+        <div class="problem-card">
+          <div class="problem-icon">😴</div>
+          <div>
+            <h4>Lacks Engagement</h4>
+            <p>Without gamification, motivation fades quickly. Punishments exist but aren't enforced fairly.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section class="features-section">
+  <div class="container">
+    <div style="text-align:center">
+      <div class="section-label">What Slugger Does</div>
+      <h2 class="section-title">Every feature built for accountability</h2>
+    </div>
+    <div class="features-grid">
+      <div class="feature-card f1">
+        <div class="feature-icon fi-purple">🎯</div>
+        <h3>Custom Goal Setting</h3>
+        <p>Set personalized weekly targets across physical health, mental wellness, and long-term aspirations. Fully flexible, fully yours.</p>
+      </div>
+      <div class="feature-card f2">
+        <div class="feature-icon fi-cyan">👥</div>
+        <h3>Team Collaboration</h3>
+        <p>Create or join groups, work toward shared targets, and hold each other accountable with real-time progress visibility.</p>
+      </div>
+      <div class="feature-card f3">
+        <div class="feature-icon fi-amber">🏆</div>
+        <h3>Rewards & Forfeits</h3>
+        <p>Earn points and unlock achievements for every logged activity. Miss your goal? Face the consequences — 500 push-ups, anyone?</p>
+      </div>
+      <div class="feature-card f4">
+        <div class="feature-icon fi-green">📈</div>
+        <h3>Data-Driven Insights</h3>
+        <p>Visual dashboards and analytics help you understand your patterns, track streaks, and stay motivated week after week.</p>
+      </div>
+      <div class="feature-card f5">
+        <div class="feature-icon fi-red">⚡</div>
+        <h3>One-Tap Logging</h3>
+        <p>Log any activity with a single button press. Running, yoga, meditation, journaling — instant contribution to your team goal.</p>
+      </div>
+      <div class="feature-card f6">
+        <div class="feature-icon fi-violet">🔒</div>
+        <h3>Secure Auth System</h3>
+        <p>JWT-based authentication with email verification, bcrypt password hashing, and secure session management built-in.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section>
+  <div class="container">
+    <div style="text-align:center">
+      <div class="section-label">How It Works</div>
+      <h2 class="section-title">Up and running in minutes</h2>
+    </div>
+    <div class="steps-grid">
+      <div class="step">
+        <div class="step-num">1</div>
+        <h4>Sign Up</h4>
+        <p>Create your account with email verification for a secure, verified identity.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <h4>Form a Team</h4>
+        <p>Create a group or join one with a code. Challenge your friends to compete.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <h4>Set Weekly Goals</h4>
+        <p>Define your group's target point count for the week across all activity types.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <h4>Track & Win</h4>
+        <p>Log activities, watch the leaderboard, and celebrate hitting your goal together.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TECH -->
+<section class="tech-section">
+  <div class="container" style="text-align:center">
+    <div class="section-label">Tech Stack</div>
+    <h2 class="section-title">Built with modern tools</h2>
+    <p class="section-sub" style="margin: 0 auto">
+      A full-stack mobile application engineered for scalability, performance, and developer experience.
+    </p>
+    <div class="tech-grid">
+      <div class="tech-chip"><span>⚛️</span> React Native</div>
+      <div class="tech-chip"><span>📱</span> Expo</div>
+      <div class="tech-chip"><span>🟢</span> Node.js</div>
+      <div class="tech-chip"><span>🚂</span> Express.js</div>
+      <div class="tech-chip"><span>🍃</span> MongoDB</div>
+      <div class="tech-chip"><span>🔐</span> JWT Auth</div>
+      <div class="tech-chip"><span>📧</span> Nodemailer</div>
+      <div class="tech-chip"><span>☁️</span> Render.com</div>
+    </div>
+
+    <div class="stats-bar">
+      <div>
+        <div class="stat-num">3+</div>
+        <div class="stat-label">Goal Categories</div>
+      </div>
+      <div>
+        <div class="stat-num">∞</div>
+        <div class="stat-label">Team Size</div>
+      </div>
+      <div>
+        <div class="stat-num">1-tap</div>
+        <div class="stat-label">Activity Logging</div>
+      </div>
+      <div>
+        <div class="stat-num">100%</div>
+        <div class="stat-label">Open Source</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section">
+  <div class="container">
+    <h2>Ready to <span class="grad-text">Slug It Out?</span></h2>
+    <p>Join your team, set your goals, and build the habits that last.</p>
+    <div class="cta-btn-group">
+      <button class="btn-primary">⚾ Get Started Free</button>
+      <button class="btn-secondary">View Source Code →</button>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="logo">⚾ Slugger</div>
+  <p>Built with ❤️ by Group 6 · Open Source · MIT License</p>
+  <p style="font-size:0.75rem;color:var(--muted)">React Native · Node.js · MongoDB</p>
+</footer>
+
+</body>
+</html>
